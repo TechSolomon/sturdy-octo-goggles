@@ -1,2 +1,2 @@
-# sturdy-octo-goggles
+# `sturdy-octo-goggles`
 Industrial Harmony → HMI Revolution
