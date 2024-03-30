@@ -8,6 +8,10 @@ import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
+var (
+	SAMPLE = 42
+)
+
 var messagePublishHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
 	fmt.Printf(">> Received message: %s from topic: %s\n", msg.Payload(), msg.Topic())
 }
@@ -20,7 +24,7 @@ var connHandler mqtt.OnConnectHandler = func(client mqtt.Client) {
 	fmt.Println(">> ✅ Connection successful!")
 }
 
-func publish(client mqtt.Client) {
+func subscribe(client mqtt.Client) {
 	topic := "example/message"
 	token := client.Subscribe(topic, 1, nil)
 	token.Wait()
@@ -32,7 +36,14 @@ func intermediary(input float64) float64 {
 	return output
 }
 
-func subscribe(client mqtt.Client) {
+func synchronization(s string) {
+	for i := 0; i < SAMPLE; i++ {
+		time.Sleep(100 * time.Millisecond)
+		fmt.Println(s)
+	}
+}
+
+func publish(client mqtt.Client) {
 	example := 42.0
 	solution := intermediary(example)
 	context := fmt.Sprintf("Hello, world. %e", solution)
@@ -60,7 +71,10 @@ func main() {
 		panic(token.Error())
 	}
 
-	// https://go.dev/tour/concurrency/9
 	subscribe(client)
+
+	go synchronization("first")
+	synchronization("second")
+
 	publish(client)
 }
